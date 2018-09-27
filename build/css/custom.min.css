@@ -358,8 +358,7 @@ body {height: 100%;margin: 0;padding: 0;}
 /* attribution and scale controls */
 
 .leaflet-container .leaflet-control-attribution {
-	/*background-color: rgba(176, 223, 229, 0.7);*/
-	background: rgba(176, 223, 229, 0.7);
+	background-color: rgba(255, 255, 255, 0.7);
 	box-shadow: 0 0 5px #bbb;
 	margin: 0;
 	}
@@ -547,3 +546,5 @@ body {height: 100%;margin: 0;padding: 0;}
 	.table-responsive-xl thead tr th {
 		text-align: center;
 	}
+	.LocationRow{cursor: pointer;}
+	.SubLocationRow{display: none;}
