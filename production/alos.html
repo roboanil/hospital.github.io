@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="images/favicon.ico" type="image/ico" />
+
+    <title>Divergent Hospital Analytics</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- JQVMap -->
+    <link href="../vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
+    <!-- bootstrap-daterangepicker -->
+    <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+    <!-- Custom Theme Style -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <script src = "./assets/js/faker.js" type = "text/javascript"></script>
+    <link href="../vendors/c3/c3.min.css" rel="stylesheet">
+  <script>
+ 
+  function formatDate(obj){
+    var dateObj = new Date(obj);
+    var month = dateObj.getUTCMonth() + 1; //months from 1-12
+    var day = dateObj.getUTCDate();
+    var year = dateObj.getUTCFullYear();
+
+    return day+ "-" + month + "-" +year;
+  }
+
+function GetDescSortOrder(prop) {  
+    return function(b, a) {  
+        if (a[prop] > b[prop]) {  
+            return 1;  
+        } else if (a[prop] < b[prop]) {  
+            return -1;  
+        }  
+        return 0;  
+    }  
+} 
+function GetAscSortOrder(prop) {  
+    return function(a, b) {  
+        if (a[prop] > b[prop]) {  
+            return 1;  
+        } else if (a[prop] < b[prop]) {  
+            return -1;  
+        }  
+        return 0;  
+    }  
+} 
+
+
+function parseTableSearchData(data,tableFields,filterType,filterValue){
+  let tableHTML = '';
+  for (let i=0;i<data.length;i++){
+      tableHTML += '<tr class="even pointer">';
+      let val = '';
+      switch (filterType){
+        case 'Name': val = data[i].Name; break;
+        case 'PatientId': val = data[i].PatientId; break;
+        case 'Age': val = data[i].Age; break;
+        case 'Gender': val = data[i].Gender; break;
+        case 'Department': val = data[i].Department; break;
+        case 'CaseType': val = data[i].CaseType; break;
+        case 'StandardLOS': val = data[i].StandardLOS; break;
+        case 'DeviatedLOS': val = data[i].DeviatedLOS; break;
+        case 'ReasonforDeviation': val = data[i].ReasonforDeviation; break;
+        case 'Consultant': val = data[i].Consultant; break;
+
+
+      }
+      if (isNaN(val))
+        val = val.toLowerCase();
+      else
+        val = val.toString();
+      if (isNaN(filterValue))
+        filterValue = filterValue.toLowerCase();
+      else
+        filterValue = filterValue.toString();
+
+      if (tableFields.indexOf(filterType)>-1 && val.indexOf(filterValue)>-1){
+        if(tableFields.indexOf('Name')>-1 )
+          tableHTML += '  <td class=" ">'+data[i].Name+'</td>'; 
+        if(tableFields.indexOf('PatientId')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].PatientId+'</p></td>';
+        if(tableFields.indexOf('Age')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].Age+'</p> </td>';
+        if(tableFields.indexOf('Gender')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].Gender+'</p> </td>';
+        if(tableFields.indexOf('Department')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].Department+'</p></td>';
+        if(tableFields.indexOf('CaseType')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].CaseType+'</p></td>';
+        if(tableFields.indexOf('StandardLOS')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].StandardLOS+'</p></td>';
+        if(tableFields.indexOf('ActualLOS')>-1)
+          tableHTML += '<td class=" last"><p>'+data[i].ActualLOS+'</p></td>';
+        if(tableFields.indexOf('DeviatedLOS')>-1)
+          tableHTML += '<td class=" last"><p>'+data[i].DeviatedLOS+'</p></td>';
+        if(tableFields.indexOf('ReasonforDeviation')>-1)
+          tableHTML += '<td class=" last"><p>'+data[i].ReasonforDeviation+'</p></td>';
+        if(tableFields.indexOf('Consultant')>-1)
+          tableHTML += '<td class=" last"><p>'+data[i].Consultant+'</p></td>';
+          tableHTML += '</tr>';
+      }
+  }
+  $("#myTableBody").html(tableHTML);
+}
+
+function parseTableHead(data,tableFields){
+  let tableHTML = '';
+  tableHTML += '<tr class="headings">';
+  if(tableFields.indexOf('Name')>-1)
+    tableHTML += '  <th class="column-title"><p class="sort" data-key="Name" data-sort="ASC">Name</p><input type="text" name="Name" class="search"></th>';
+  if(tableFields.indexOf('PatientId')>-1)
+    tableHTML += '  <th class="column-title"><p class="sort" data-key="PatientId" data-sort="ASC">PatientId</p><input type="text" name="PatientId" class="search"></th>';
+  if(tableFields.indexOf('Age')>-1)
+    tableHTML += '<th class="column-title"><p class="sort" data-key="Age" data-sort="ASC">Age</p><input type="text" name="Age" class="search"></th>';
+  if(tableFields.indexOf('Gender')>-1)
+    tableHTML += '<th class="column-title"><p class="sort" data-key="Gender" data-sort="ASC">Gender</p><input type="text" name="Gender" class="search"></th>';
+  if(tableFields.indexOf('Department')>-1)
+    tableHTML += '<th class="column-title"><p class="sort" data-key="Department" data-sort="ASC">Department</p><input type="text" name="Department" class="search"> </th>';
+  if(tableFields.indexOf('CaseType')>-1)
+    tableHTML += '<th class="column-title"><p class="sort" data-key="CaseType" data-sort="ASC">Case Type</p><input type="text" name="CaseType" class="search"></th>';
+  if(tableFields.indexOf('StandardLOS')>-1)
+    tableHTML += '<th class="column-title"><p class="sort" data-key="StandardLOS" data-sort="ASC">Standard LOS</p><input type="text" name="StandardLOS" class="search"></th>';
+  if(tableFields.indexOf('ActualLOS')>-1)
+    tableHTML += '<th class="column-title"><p class="sort" data-key="ActualLOS" data-sort="ASC">Actual LOS</p><input type="text" name="ActualLOS" class="search"></th>';
+  if(tableFields.indexOf('DeviatedLOS')>-1)
+    tableHTML += '<th class="column-title"><p class="sort" data-key="DeviatedLOS" data-sort="ASC">Deviated LOS</p><input type="text" name="DeviatedLOS" class="search"></th>';
+  if(tableFields.indexOf('ReasonforDeviation')>-1)
+    tableHTML += '<th class="column-title last" style="width:250px;"><p class="sort" data-key="ReasonforDeviation" data-sort="ASC">Reason for Deviation</p><input type="text" name="ReasonforDeviation" class="search"></th>';
+  if(tableFields.indexOf('Consultant')>-1)
+    tableHTML += '<th class="column-title last"><p class="sort" data-key="Consultant" data-sort="ASC">Consultant</p><input type="text" name="Consultant" class="search"></th>';
+  tableHTML += '</tr>';
+  $("#myTableHead").html(tableHTML);
+}
+
+function parseTableData(data,tableFields){
+  let tableHTML = ''; 
+  for (let i=0;i<data.length;i++){
+      tableHTML += '<tr class="even pointer">';
+      if(tableFields.indexOf('Name')>-1 )
+          tableHTML += '  <td class=" ">'+data[i].Name+'</td>'; 
+        if(tableFields.indexOf('PatientId')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].PatientId+'</p></td>';
+        if(tableFields.indexOf('Age')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].Age+'</p> </td>';
+        if(tableFields.indexOf('Gender')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].Gender+'</p> </td>';
+        if(tableFields.indexOf('Department')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].Department+'</p></td>';
+        if(tableFields.indexOf('CaseType')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].CaseType+'</p></td>';
+        if(tableFields.indexOf('StandardLOS')>-1)
+          tableHTML += '<td class=" "><p>'+data[i].StandardLOS+'</p></td>';
+        if(tableFields.indexOf('ActualLOS')>-1)
+          tableHTML += '<td class=" last"><p>'+data[i].ActualLOS+'</p></td>';
+        if(tableFields.indexOf('DeviatedLOS')>-1)
+        {
+          if(data[i].DeviatedLOS > 0)
+          tableHTML += '<td class=" last" style="background:#f3cad5;"><p>'+data[i].DeviatedLOS+'</p></td>';
+          else
+            tableHTML += '<td class=" last"><p>'+data[i].DeviatedLOS+'</p></td>';
+        }
+        if(tableFields.indexOf('ReasonforDeviation')>-1)
+          tableHTML += '<td class=" last"><p>'+data[i].ReasonforDeviation+'</p></td>';
+        if(tableFields.indexOf('Consultant')>-1)
+          tableHTML += '<td class=" last"><p>'+data[i].Consultant+'</p></td>';
+          tableHTML += '</tr>';
+  }
+   tableHTML += '</tbody>';
+  $("#myTableBody").html(tableHTML);
+}
+function parseTableFieldsObject(tableFields)
+{
+  let fields = '';
+  for (let i=0;i<tableFields.length;i++)
+  {
+    fields += '<div><input type="checkbox" class="checkboxClass" value="'+tableFields[i]+'" checked> '+tableFields[i]+'</div>'
+  }
+  $("#myFields").html(fields);
+}
+ 
+  $(document).ready( function () {
+
+  let tableFieldsDef = ['Name','PatientId','Age','Gender','Department','CaseType','StandardLOS','ActualLOS','DeviatedLOS','ReasonforDeviation','Consultant'];
+  let tableFields = ['Name','PatientId','Age','Gender','Department','CaseType','StandardLOS','ActualLOS','DeviatedLOS','ReasonforDeviation','Consultant'];
+
+
+  faker.locale = 'en_IND';
+  let data = [];
+  let caseType = ['Medical','Surgical'];
+  let gender = ['M','F'];
+  let depts = [
+  'Cardiology',
+'Endocrinology',
+'Gastroenterology',
+'General Internal Medicine and Primary Care',
+'Hematology/Oncology',
+'Infectious Diseases',
+'Nephrology and Hypertension',
+'Occupational and Environmental Medicine',
+'Pulmonary Diseases and Critical Care Medicine',
+'Rheumatology',
+'Ear nose and throat',
+'General surgery',
+'Gynaecology',
+'Haematology',
+'Maternity',
+'Neonatal unit',
+'Neurology'];
+  for (let i=0;i<200;i++){
+    let x = Math.floor(Math.random() * 5);
+    let y = Math.floor(Math.random() * 10);
+    let z = y-x;
+
+    let a = caseType[Math.floor(Math.random()*caseType.length)];
+    let b = gender[Math.floor(Math.random()*gender.length)];
+    let c = depts[Math.floor(Math.random()*depts.length)];
+    let dataObject = {
+      Name:faker.name.findName(),
+      PatientId:faker.address.zipCode(),
+      Department:c,
+      StandardLOS:x,
+      ActualLOS:y,
+      DeviatedLOS:z,
+      ReasonforDeviation:faker.lorem.sentence(),
+      Age:Math.floor(Math.random() * 80),
+      Gender:b,
+      CaseType:a,
+      Consultant:faker.name.findName()
+    }
+    data.push(dataObject);
+  }
+
+    parseTableFieldsObject(tableFields);
+    parseTableData(data,tableFields);
+    parseTableHead(data,tableFields);
+    $(document).on('change','.checkboxClass',function(){
+      tableFields = new Array();
+      $.each($('input[type="checkbox"]:checked'), function (key, value) {
+        tableFields.push($(value).val());
+      }); 
+      console.log(tableFields);
+      parseTableData(data,tableFields);
+      parseTableHead(data,tableFields);
+     
+
+    });
+    $(document).on('keyup','.search',function(){
+      let filterType=$(this).attr("name");
+      let filterValue=$(this).val();
+
+      if (filterValue != '')
+      parseTableSearchData(data,tableFields,filterType,filterValue);
+    });
+    $(document).on('click','.sort',function(){
+      let filterKey  = $(this).attr("data-key");
+      let filterValue = $(this).attr("data-sort");
+
+      if (filterValue == 'DESC')
+      {
+        data.sort(GetDescSortOrder(filterKey)); 
+        $(this).attr("data-sort","ASC");
+      }
+      else 
+      {
+        $(this).attr("data-sort","DESC");
+        data.sort(GetAscSortOrder(filterKey)); 
+      }
+      parseTableData(data,tableFields);
+    });
+  });
+
+  
+   
+  </script>
+  </head>
+  <style type="text/css">
+    .search {
+      width:80%;
+      border-radius: 3px;
+      border:1px solid #d6d5d5;
+      margin-bottom: 10px;
+    }
+    .newtable #myTableHead .headings p{padding-bottom: 0px;margin-bottom: 0px !important;}
+    .newtable #myTableHead .headings p{padding-bottom: 0px;margin-bottom: 0px !important;}
+
+  </style>
+
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+          
+            <div class="navbar nav_title" style="border: 0;">
+
+              <a href="index.html" class="site_title"><span>Hospital Analytics</span></a>
+            </div>
+             <div class="clearfix"></div>
+
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+              <div class="menu_section">
+                <ul class="nav side-menu">
+                  <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="index.html">Dashboard</a></li>
+                      <li><a href="healthcamps-refs.html">Helath Camps / References</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-user"></i> Inpatient <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="ip.html">Dashboard</a></li>
+                      <li><a href="beds.html">Beds</a></li>
+                      <li><a href="discharges.html">Discharges</a></li>
+                      <li><a href="surgeries.html">Surgeries</a></li>
+                      <li><a href="procedures.html">Procedures</a></li>
+                      <li><a href="map-beds.html">Beds Demography</a></li>
+                      <li><a href="map-ip-patients.html">Patients Demography</a></li>
+                      <li><a href="map-ip-departments.html">Departments Demography</a></li>
+                      <li><a href="map-ip-paymenttypes.html">Payment types Demography</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-user"></i> Outpatient <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="op.html">Dashboard</a></li>
+                      <li><a href="map-op-patients.html">Patients Demography</a></li>
+                      <li><a href="map-op-departments.html">Departments Demography</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-table"></i> Diagnostics <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="ip-diagnostics.html">Inpatient</a></li>
+                      <li><a href="op-diagnostics.html">Outpatient</a></li>
+                      <li><a href="map-diagnostics.html">Demography</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-bar-chart-o"></i>Timely Growth <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="revenue-comparision.html">Revenue</a></li>
+                      <li><a href="departments-comparision.html">Departments</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- /sidebar menu -->
+
+            <!-- /menu footer buttons -->
+            <div class="sidebar-footer hidden-small">
+              <a data-toggle="tooltip" data-placement="top" title="Settings">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Lock">
+                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
+                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+              </a>
+            </div>
+            <!-- /menu footer buttons -->
+          </div>
+        </div>
+
+        <!-- top navigation -->
+        <div class="top_nav">
+          <div class="nav_menu">
+            <nav>
+              <div class="nav toggle">
+                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+              </div>
+
+              <ul class="nav navbar-nav navbar-right">
+                <li class="">
+                  <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-user"> </i> Admin
+                    <span class=" fa fa-angle-down"></span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-usermenu pull-right">
+                    <li><a href="javascript:;"> Profile</a></li>
+                    <li>
+                      <a href="javascript:;">
+                        <span>Settings</span>
+                      </a>
+                    </li>
+                    <li><a href="javascript:;">Help</a></li>
+                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <!-- /top navigation -->
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+<div class="row">          
+<div class="col-md-12"><div class="x_panel tile" >
+<div class="x_title">
+                  <h2>ALOS</h2>
+                  <ul class="nav navbar-right panel_toolbox">
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-chevron-down"></i></a>
+                      <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Option 1</a>
+                        </li>
+                        <li><a href="#">Option 2</a>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                  <div class="clearfix"></div>
+                </div>
+              <div id="chart"></div></div></div>
+		  <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel tile" >
+                  <div class="x_title">
+                  <h2>Discharges - Payment Types</h2>
+                  <ul class="nav navbar-right panel_toolbox">
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-chevron-down"></i></a>
+                      <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Option 1</a>
+                        </li>
+                        <li><a href="#">Option 2</a>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                  <div class="clearfix"></div>
+                </div>
+                    <div class="table-responsive col-md-10" style="height: 600px;">
+                      <table class="newtable" rules="rows" style="width:1580px; overflow: scroll;">
+                      <thead id="myTableHead" >
+                        
+                      </thead>
+                      <tbody id="myTableBody">
+                        
+                      </tbody>
+                      </table>
+                    </div>
+                    <div class="col-md-2"><div id="myFields"></div></div>
+                </div>
+              </div>
+              
+          </div>
+        </div>
+        
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+           Divergent Hospital Analytics
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- Chart.js -->
+    <script src="../vendors/Chart.js/dist/Chart.min.js"></script>
+    <script src="../vendors/moment/min/moment.min.js"></script>
+    <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.js"></script>
+    
+ <!-- Load d3.js and c3.js -->
+<script src="../vendors/c3/d3.min.js" charset="utf-8"></script>
+<script src="../vendors/c3/c3.min.js"></script>
+
+  
+ <script type="text/javascript">
+var chart = c3.generate({
+  bindto: '#chart',
+  data: {
+    columns: [
+      ['ActualLOS',51, 21, 12, 38, 18, 24,51, 21, 12, 38, 18, 24],
+      ['StandardLOS', 50, 20, 10, 40, 15, 25, 50, 20, 10, 40, 15, 25]
+    ],
+    types: {
+      StandardLOS: 'bar' // ADD
+    }
+  },
+  axis: {
+       x: {
+            type: 'category',
+            categories:[
+  'Cardiology',
+'Endocrinology',
+'Gastroenterology',
+'General Internal Medicine and Primary Care',
+'Hematology/Oncology',
+'Infectious Diseases',
+'Nephrology and Hypertension',
+'Occupational and Environmental Medicine',
+'Pulmonary Diseases and Critical Care Medicine',
+'Rheumatology',
+'Ear nose and throat',
+'General surgery',
+'Gynaecology',
+'Haematology',
+'Maternity',
+'Neonatal unit',
+'Neurology']
+        }
+    },
+});
+ </script>
+  </body>
+</html>

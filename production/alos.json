@@ -1,0 +1,35 @@
+[
+ {
+   "Expected ALOS": "7",
+   "Actual ALOS": "10",
+   "Admitted Cause": "Surgery",
+   "Surgery type": "Cardio",
+   "Procedure type": "dsds",
+   "Treatment Type": "xcxc",
+   "ALOS Cost": "600000",
+   "ALOS ProfitorLoss": "200000",
+   "ALOS Revenue": "800000"
+ },
+ {
+  "Expected ALOS": "4",
+   "Actual ALOS": "6",
+   "Admitted Cause": "Dengue",
+   "Surgery type": "css",
+   "Procedure type": "sss",
+   "Treatment Type": "Plan D",
+   "ALOS Cost": "200000",
+   "ALOS ProfitorLoss": "50000",
+   "ALOS Revenue": "250000"
+ },
+ {
+  "Expected ALOS": "2",
+   "Actual ALOS": "3",
+   "Admitted Cause": "Appendicitis",
+   "Surgery type": "Appendicitis",
+   "Procedure type": "sdsd",
+   "Treatment Type": "sdsdd",
+   "ALOS Cost": "100000",
+   "ALOS ProfitorLoss": "50000",
+   "ALOS Revenue": "150000"
+ }
+]
