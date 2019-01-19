@@ -548,3 +548,7 @@ body {height: 100%;margin: 0;padding: 0;}
 	}
 	.LocationRow{cursor: pointer;}
 	.SubLocationRow{display: none;}
+	.leaflet-top.leaflet-right,.leaflet-bottom.leaflet-right{
+    display: none;
+  }
+  .leaflet-container { background: none !important; }
