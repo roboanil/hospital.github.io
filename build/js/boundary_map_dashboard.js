@@ -8,12 +8,12 @@ var mandalsLayer;
 for(var i=1;i<5;i++){
 	if(document.getElementById(map.concat(i))){
 		var m;
-		if (typeof isComparisionPage !== undefined)
+		if (typeof isComparisionPage === undefined)
 			m = L.map(map.concat(i)).setView([22.5937, 78.9629], 4.2);
 		else
 		 	m = L.map(map.concat(i)).setView([22.5937, 78.9629], 3.2);
 
-
+		 console.log(m.getZoom());
 		for (let index = 0; index < statesData.features.length; index++) {
 			statesData.features[index].properties["value"] = Math.floor(Math.random() * Math.floor(1500));
 		}
