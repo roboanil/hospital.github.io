@@ -331,6 +331,43 @@ rect:hover {  fill:blue; }
           <br />
 
           <div class="row">
+
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel tile overflow_hidden">
+            <div class="x_title">
+                  <h2>Lenin Calculation</h2>
+                  
+                  <div class="clearfix"></div>
+                </div>
+              <div class="col-md-4">
+                <label>In Patients</label>
+                <input type="text" class="input-mini form-control active" id="ip" placeholder="In Patient">
+                <label>Discharges</label>
+                <input type="text" class="input-mini form-control active" id="discharges" placeholder="Discharges">
+                <div><label>Surgeries</label></div>
+                <input type="text" class="input-mini form-control active" style="width: 50%; float: left;" id="surgeries" placeholder="Surgeries">
+                <input type="text" class="input-mini form-control active" style="width: 50%; float: left;" id="staff" placeholder="Staff"><br /><br />
+                <button class="applyBtn btn btn-default btn-small btn-primary pull-right" type="button">Calculate</button>
+              </div>
+               <div class="col-md-4 tile_count">
+               <div class="tile_stats_count">
+               <label>Total Lenin to Wash</label>
+               <div class="count" id="countvalue">
+                 0
+               </div></div>
+               </div>
+              <div class="col-md-4">
+              <div><label>Calculation Rules:</label></div>
+                <ul>
+                  <li>For every 24 hours lenin should change for Inpatient beds.</li>
+                  <li>After every discharge, lenin should change.</li>
+                  <li>For every surgery 4 lenin required.</li>
+                  <li>For all staff who are attended for surgery, full surgery gowns should wash.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
           <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel tile overflow_hidden">
             <div class="x_title">
@@ -729,6 +766,20 @@ var freqData=[
 ];
 
 dashboard('#dashboard',freqData);
+
+$(".applyBtn").click(function () {
+  let ip = parseInt($("#ip").val());
+  let dis = parseInt($("#discharges").val());
+  let sur = parseInt($("#surgeries").val());
+  let staff = parseInt($("#staff").val());
+
+  let countedValue = ip + dis;
+  if (sur != '' && staff != '' ){
+    countedValue = countedValue + (4*sur) + staff;
+  }
+
+  $("#countvalue").html(countedValue);
+})
 </script>
 	
   </body>
